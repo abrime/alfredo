@@ -43,7 +43,7 @@
   <img id="image" src="your-image-url-here" alt="Celebration Image">
 
   <script>
-    const targetDate = new Date('December 28, 2024 00:00:00').getTime();
+    const targetDate = new Date(Date.UTC(2024, 11, 28, 3, 0, 0)).getTime(); // Adjusts for GMT-3
     const countdownEl = document.getElementById('countdown');
     const imageEl = document.getElementById('image');
     const canvas = document.getElementById('fireworks');
