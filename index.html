@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Countdown Page</title>
+  <title>Felicidades Alfredo!</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -40,10 +40,12 @@
 <body>
   <div id="countdown"></div>
   <canvas id="fireworks"></canvas>
-  <img id="image" src="your-image-url-here" alt="Celebration Image">
+  <img id="image" src="cupon.png" alt="cupon">
 
   <script>
-    const targetDate = new Date(Date.UTC(2024, 11, 28, 3, 0, 0)).getTime(); // Adjusts for GMT-3
+    // Target date in GMT-3
+    const targetDate = new Date('2024-12-28T00:00:00-03:00').getTime();
+
     const countdownEl = document.getElementById('countdown');
     const imageEl = document.getElementById('image');
     const canvas = document.getElementById('fireworks');
