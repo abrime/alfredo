@@ -43,8 +43,8 @@
   <img id="image" src="cupon.png" alt="cupon">
 
   <script>
-    // Target date in GMT-3
-    const targetDate = new Date('2024-12-28T00:00:00-03:00').getTime();
+    // Set target date with GMT-3 offset explicitly
+    const targetDate = new Date(Date.UTC(2024, 11, 28, 3, 0, 0)); // Midnight GMT-3 on Dec 28, 2024
 
     const countdownEl = document.getElementById('countdown');
     const imageEl = document.getElementById('image');
@@ -54,6 +54,8 @@
     canvas.height = window.innerHeight;
 
     const fireworks = [];
+    let animationFrameId;
+
     class Firework {
       constructor(x, y, dx, dy, color) {
         this.x = x;
@@ -66,7 +68,7 @@
       update() {
         this.x += this.dx;
         this.y += this.dy;
-        this.dy += 0.02;
+        this.dy += 0.02; // Simulates gravity
         this.life--;
       }
       draw() {
@@ -83,8 +85,8 @@
         const x = Math.random() * canvas.width;
         const y = Math.random() * canvas.height / 2;
         for (let i = 0; i < 20; i++) {
-          const dx = (Math.random() - 0.5) * 5;
-          const dy = (Math.random() - 0.5) * 5;
+          const dx = (Math.random() - 0.5) * 2; // Capped speed
+          const dy = (Math.random() - 0.5) * 2; // Capped speed
           const color = `hsl(${Math.random() * 360}, 100%, 50%)`;
           fireworks.push(new Firework(x, y, dx, dy, color));
         }
@@ -92,11 +94,18 @@
     }
 
     function updateFireworks() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       fireworks.forEach((firework, index) => {
         firework.update();
         firework.draw();
         if (firework.life <= 0) fireworks.splice(index, 1);
       });
+    }
+
+    function animateFireworks() {
+      createFireworks();
+      updateFireworks();
+      animationFrameId = requestAnimationFrame(animateFireworks);
     }
 
     function countdown() {
@@ -107,15 +116,13 @@
         countdownEl.style.display = 'none';
         imageEl.style.display = 'block';
         canvas.style.pointerEvents = 'none';
-        setInterval(() => {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          createFireworks();
-          updateFireworks();
-        }, 50);
+        cancelAnimationFrame(animationFrameId); // Ensure no previous animations run
+        animateFireworks(); // Start the fireworks animation
       } else {
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-        countdownEl.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        countdownEl.textContent = `${hours}:${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
       }
     }
 
