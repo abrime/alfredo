@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Countdown Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #282c34;
+      color: white;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    #countdown {
+      font-size: 3rem;
+    }
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    #image {
+      display: none;
+      max-width: 90%;
+      max-height: 80%;
+      z-index: 10;
+      position: relative;
+    }
+  </style>
+</head>
+<body>
+  <div id="countdown"></div>
+  <canvas id="fireworks"></canvas>
+  <img id="image" src="your-image-url-here" alt="Celebration Image">
+
+  <script>
+    const targetDate = new Date('December 28, 2024 00:00:00').getTime();
+    const countdownEl = document.getElementById('countdown');
+    const imageEl = document.getElementById('image');
+    const canvas = document.getElementById('fireworks');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const fireworks = [];
+    class Firework {
+      constructor(x, y, dx, dy, color) {
+        this.x = x;
+        this.y = y;
+        this.dx = dx;
+        this.dy = dy;
+        this.color = color;
+        this.life = 100;
+      }
+      update() {
+        this.x += this.dx;
+        this.y += this.dy;
+        this.dy += 0.02;
+        this.life--;
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+        ctx.closePath();
+      }
+    }
+
+    function createFireworks() {
+      if (Math.random() < 0.1) {
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height / 2;
+        for (let i = 0; i < 20; i++) {
+          const dx = (Math.random() - 0.5) * 5;
+          const dy = (Math.random() - 0.5) * 5;
+          const color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+          fireworks.push(new Firework(x, y, dx, dy, color));
+        }
+      }
+    }
+
+    function updateFireworks() {
+      fireworks.forEach((firework, index) => {
+        firework.update();
+        firework.draw();
+        if (firework.life <= 0) fireworks.splice(index, 1);
+      });
+    }
+
+    function countdown() {
+      const now = new Date().getTime();
+      const distance = targetDate - now;
+
+      if (distance <= 0) {
+        countdownEl.style.display = 'none';
+        imageEl.style.display = 'block';
+        canvas.style.pointerEvents = 'none';
+        setInterval(() => {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          createFireworks();
+          updateFireworks();
+        }, 50);
+      } else {
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        countdownEl.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+      }
+    }
+
+    setInterval(countdown, 1000);
+  </script>
+</body>
+</html>
